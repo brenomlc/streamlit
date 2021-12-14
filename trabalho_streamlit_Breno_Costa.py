@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 df_survey = pd.read_csv("dados/survey_results_public.csv")
 
@@ -11,11 +12,11 @@ Breno Marques Lomasso Costa
 
 "#### 1- Porcentagem das pessoas que responderam que se consideram profissionais, não profissionais, estudante, hobby, ...."
 
-st.code(language='python', body="""df_survey.groupby('MainBranch')['MainBranch'].count().rename('Percentage').transform(lambda x: x/x.sum()*100)""")
-df_emp = df_survey.groupby('MainBranch')['MainBranch'].count().rename('Percentage').transform(lambda x: x/x.sum()*100)
+st.code(language='python', body="""df_survey['MainBranch'].value_counts(normalize=True).mul(100).round(2)""")
+df_emp = df_survey['MainBranch'].value_counts(normalize=True).mul(100).round(2)
 st.bar_chart(df_emp)
 st.write("Como podemos visualizar no gráfico de barras acima, a maior "
-         "parte das pessoas (69%) são desenvolvedores profissionais.")
+         "parte das pessoas (69.7%) são desenvolvedores profissionais.")
 
 """---"""
 
@@ -31,6 +32,11 @@ st.write("O país que teve maior pariticipação foi os EUA, com 15288 pessoas."
 """---"""
 
 "#### 3- Qual a distribuição nível de estudo dos participantes?"
+
+st.code(language='python', body="""df_survey['EdLevel'].value_counts(normalize=True).mul(100).round(2).rename_axis('EdLevel').reset_index(name='counts')""")
+df_ed_level = df_survey['EdLevel'].value_counts(normalize=True).mul(100).round(2).rename_axis('EdLevel').reset_index(name='counts')
+pizza = px.pie(df_ed_level, values='counts', names='EdLevel', title='Nível de educação dos entrevistados')
+pizza
 
 """---"""
 
