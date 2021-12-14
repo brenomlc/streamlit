@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-survey = pd.read_csv("dados/survey_results_public.csv")
-schema = pd.read_csv("dados/survey_results_schema.csv")
+df_survey = pd.read_csv("dados/survey_results_public.csv")
 
 """
 # Python para Ciência de Dados
@@ -12,9 +11,22 @@ Breno Marques Lomasso Costa
 
 "#### 1- Porcentagem das pessoas que responderam que se consideram profissionais, não profissionais, estudante, hobby, ...."
 
+st.code(language='python', body="""df_survey.groupby('MainBranch')['MainBranch'].count().rename('Percentage').transform(lambda x: x/x.sum()*100)""")
+df_emp = df_survey.groupby('MainBranch')['MainBranch'].count().rename('Percentage').transform(lambda x: x/x.sum()*100)
+st.bar_chart(df_emp)
+st.write("Como podemos visualizar no gráfico de barras acima, a maior "
+         "parte das pessoas (69%) são desenvolvedores profissionais.")
+
 """---"""
 
 "#### 2- Distribuição das pessoas que responderam por localidade. Qual o país que teve maior participação?"
+
+st.code(language='python', body="""df_survey['Country'].value_counts()""")
+df_country = df_survey['Country'].value_counts()
+df_country
+st.write("O país que teve maior pariticipação foi os EUA, com 15288 pessoas."
+         "Seguido da Índia, com 10511 pariticipantes. "
+         "Já o Brasil contou com 2254.")
 
 """---"""
 
