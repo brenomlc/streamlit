@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
+from scipy import stats
 
 df_survey = pd.read_csv("dados/survey_results_public.csv")
 
@@ -71,12 +72,13 @@ st.code(language='python', body="""df_survey.Currency.value_counts().nlargest(3)
 df_currency = df_survey.Currency.value_counts().nlargest(3)
 df_currency
 
-df_mean_salary = df_survey.loc[df_survey['Currency'] == 'USD\tUnited States dollar'][['CompFreq','CompTotal']].dropna()
-df_mean_salary_year = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Yearly']['CompTotal'].divide(12)
-df_mean_salary_week = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Weekly']['CompTotal'].mul(4)
+df_mean_salary = df_survey.loc[df_survey['Currency'] == 'USD\tUnited States dollar'][['CompFreq','CompTotal']].dropna() #Obtem apenas salários em dólar
+df_mean_salary = df_mean_salary[(np.abs(stats.zscore(df_mean_salary['CompTotal'])) < 3)] # Remove valor extremo
+df_mean_salary_year = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Yearly']['CompTotal'].divide(12) #Transforma salário anual para valor mensal
+df_mean_salary_week = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Weekly']['CompTotal'].mul(4) #Transforma salário semanal para valor mensal
 df_mean_salary_month = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Monthly']['CompTotal']
-df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month]).mean()
-df_mean_salary
+df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month])
+st.write("A média salarial dos que ganham em USD é $" + str(round(df_mean_salary.mean(), 2)))
 
 ## preciso como arrumar esse estouro no float ##
 
@@ -87,6 +89,10 @@ df_mean_salary
 """---"""
 
 "#### 8- Qual a porcentagem das pessoas que trabalham com python?"
+
+df_python = df_survey['LanguageHaveWorkedWith']
+df_python.dropna(inplace=True)
+#TODO:continuar a mágica
 
 """---"""
 
