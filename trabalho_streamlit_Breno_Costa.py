@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import numpy as np
 
 df_survey = pd.read_csv("dados/survey_results_public.csv")
 
@@ -41,6 +42,17 @@ pizza
 """---"""
 
 "#### 4- Qual a distribução de tempo de trabalho para cada tipo de profissional respondido na questão 1."
+
+formacoes = df_survey['MainBranch'].explode().unique()
+for formacao in formacoes:
+    st.write(formacao)
+    df_temp = df_survey[['MainBranch', 'YearsCode']].loc[df_survey['MainBranch'] == formacao]
+    df_temp['YearsCode'].replace(to_replace="Less than 1 year", value=0, inplace=True)
+    df_temp['YearsCode'].replace(to_replace="More than 50 years", value=51, inplace=True)
+    df_temp.dropna(inplace=True)
+    df_temp.YearsCode = pd.to_numeric(df_temp.YearsCode, errors='coerce')
+    df_temp = df_temp.groupby(pd.cut(df_temp['YearsCode'], np.arange(0, 51, 10))).count()
+    df_temp['YearsCode']
 
 """---"""
 
