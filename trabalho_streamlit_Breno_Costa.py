@@ -46,13 +46,13 @@ pizza
 formacoes = df_survey['MainBranch'].explode().unique()
 for formacao in formacoes:
     st.write(formacao)
-    df_temp = df_survey[['MainBranch', 'YearsCode']].loc[df_survey['MainBranch'] == formacao]
-    df_temp['YearsCode'].replace(to_replace="Less than 1 year", value=0, inplace=True)
-    df_temp['YearsCode'].replace(to_replace="More than 50 years", value=51, inplace=True)
+    df_temp = df_survey[['MainBranch', 'YearsCodePro']].loc[df_survey['MainBranch'] == formacao]
+    df_temp['YearsCodePro'].replace(to_replace="Less than 1 year", value=0, inplace=True)
+    df_temp['YearsCodePro'].replace(to_replace="More than 50 years", value=51, inplace=True)
     df_temp.dropna(inplace=True)
-    df_temp.YearsCode = pd.to_numeric(df_temp.YearsCode, errors='coerce')
-    df_temp = df_temp.groupby(pd.cut(df_temp['YearsCode'], np.arange(0, 51, 10))).count()
-    df_temp['YearsCode']
+    df_temp.YearsCodePro = pd.to_numeric(df_temp.YearsCodePro, errors='coerce')
+    df_temp = df_temp.groupby(pd.cut(df_temp['YearsCodePro'], np.arange(0, 51, 10))).count()
+    df_temp['YearsCodePro']
 
 """---"""
 
@@ -64,6 +64,21 @@ for formacao in formacoes:
 """---"""
 
 "#### 6- Média salarial das pessoas que responderam."
+
+st.write("Visto que cada pessoa colocou o salário na moeda em que ele ganha, irei fazer a média apenas em dólar,"
+         " que foi a cotação mais utilizada pelas pessoas.")
+st.code(language='python', body="""df_survey.Currency.value_counts().nlargest(3)""")
+df_currency = df_survey.Currency.value_counts().nlargest(3)
+df_currency
+
+df_mean_salary = df_survey.loc[df_survey['Currency'] == 'USD\tUnited States dollar'][['CompFreq','CompTotal']].dropna()
+df_mean_salary_year = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Yearly']['CompTotal'].divide(12)
+df_mean_salary_week = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Weekly']['CompTotal'].mul(4)
+df_mean_salary_month = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Monthly']['CompTotal']
+df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month]).mean()
+df_mean_salary
+
+## preciso como arrumar esse estouro no float ##
 
 """---"""
 
