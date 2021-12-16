@@ -90,9 +90,21 @@ st.write("A média salarial dos que ganham em USD é $" + str(round(df_mean_sala
 
 "#### 8- Qual a porcentagem das pessoas que trabalham com python?"
 
-df_python = df_survey['LanguageHaveWorkedWith']
-df_python.dropna(inplace=True)
-#TODO:continuar a mágica
+linguagens = df_survey['LanguageHaveWorkedWith']
+linguagens.dropna(inplace=True)
+counts = dict()
+for l in linguagens:
+    linguagens_list = l.split(';')
+    for linguagem in linguagens_list:
+        if linguagem in counts:
+            counts[linguagem] += 1
+        else:
+            counts[linguagem] = 1
+
+porcentagem_python = counts['Python'] / sum(counts.values())
+porcentagem_python = "{:.0%}".format(porcentagem_python)
+
+st.write("A porcentagem dos que usam disseram usar Python é " + porcentagem_python)
 
 """---"""
 
