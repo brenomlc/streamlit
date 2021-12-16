@@ -114,11 +114,27 @@ st.write("A porcentagem dos que usam disseram trabalhar com Python é de " + por
 "#### 9- Sobre python:"
 "##### 9.1- Qual o nível de salário de quem trabalha com python globalmente?"
 "##### 9.2- Para o Brasil, qual o nível salarial?"
+"##### 9.3 Para os 5 países que mais tiveram participação, qual a média salarial?"
 
 """---"""
 
-"#### 10- Para os 5 países que mais tiveram participação, qual a média salarial?"
+"#### 10- De todos as pessoas, Qual o sistema operacional utilizado por elas?"
 
+"""---"""
+
+"#### 11- Das pessoas que trabalham com python, qual a distribuição de sistema operacional utilizado por elas."
+
+"""---"""
+
+"#### 12- Qual a média de idade das pessoas que responderam?"
+
+"""---"""
+
+"#### 13- E em python? Qual a média de idade?"
+
+"""---"""
+
+"##### 14 Para os 5 países que mais tiveram participação, qual a média salarial?"
 df_top_country_salary = df_survey[['Country', 'CompTotal', 'CompFreq', 'Currency']]
 top_countries = ['United States of America', 'India', 'Germany', 'United Kingdom of Great Britain and Northern Ireland', 'Canada']
 selecao = df_top_country_salary['Country'].isin(top_countries)
@@ -131,22 +147,6 @@ for country in top_countries:
     df_mean_salary_month = df_top_country_salary.loc[df_top_country_salary['CompFreq'] == 'Monthly'].loc[df_top_country_salary['Country'] == country]['CompTotal']
     df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month])
     st.write("O salário médio mensal em {} é de {}".format(country, str(round(df_mean_salary.mean(), 2))))
-
-"""---"""
-
-"#### 11- De todos as pessoas, Qual o sistema operacional utilizado por elas?"
-
-"""---"""
-
-"#### 12- Das pessoas que trabalham com python, qual a distribuição de sistema operacional utilizado por elas."
-
-"""---"""
-
-"#### 13- Qual a média de idade das pessoas que responderam?"
-
-"""---"""
-
-"#### 14- E em python? Qual a média de idade?"
 
 """---"""
 
