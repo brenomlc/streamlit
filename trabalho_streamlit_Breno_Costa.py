@@ -72,19 +72,26 @@ st.code(language='python', body="""df_survey.Currency.value_counts().nlargest(3)
 df_currency = df_survey.Currency.value_counts().nlargest(3)
 df_currency
 
-df_mean_salary = df_survey.loc[df_survey['Currency'] == 'USD\tUnited States dollar'][['CompFreq','CompTotal']].dropna() #Obtem apenas salários em dólar
+df_mean_salary = df_survey.loc[df_survey['Currency'] == 'USD\tUnited States dollar'][['CompFreq', 'CompTotal']].dropna() #Obtem apenas salários em dólar
 df_mean_salary = df_mean_salary[(np.abs(stats.zscore(df_mean_salary['CompTotal'])) < 3)] # Remove valor extremo
 df_mean_salary_year = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Yearly']['CompTotal'].divide(12) #Transforma salário anual para valor mensal
 df_mean_salary_week = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Weekly']['CompTotal'].mul(4) #Transforma salário semanal para valor mensal
 df_mean_salary_month = df_mean_salary.loc[df_mean_salary['CompFreq'] == 'Monthly']['CompTotal']
 df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month])
-st.write("A média salarial dos que ganham em USD é $" + str(round(df_mean_salary.mean(), 2)))
+st.write("O salário médio mensal dos que ganham em USD é $" + str(round(df_mean_salary.mean(), 2)))
 
 ## preciso como arrumar esse estouro no float ##
 
 """---"""
 
 "#### 7- Pegando os 5 países que mais responderam o questionário, qual é o salário destas pessoas?"
+
+df_top_country_salary = df_survey[['Country', 'CompTotal', 'CompFreq', 'Currency']]
+top_countries = ['United States of America', 'India', 'Germany', 'United Kingdom of Great Britain and Northern Ireland', 'Canada']
+selecao = df_top_country_salary['Country'].isin(top_countries)
+df_top_country_salary = df_top_country_salary[selecao].dropna().sort_values(by='Country').reset_index(drop=True)
+st.write("Salário dos 5 países com mais participantes")
+df_top_country_salary
 
 """---"""
 
@@ -111,6 +118,19 @@ st.write("A porcentagem dos que usam disseram trabalhar com Python é de " + por
 """---"""
 
 "#### 10- Para os 5 países que mais tiveram participação, qual a média salarial?"
+
+df_top_country_salary = df_survey[['Country', 'CompTotal', 'CompFreq', 'Currency']]
+top_countries = ['United States of America', 'India', 'Germany', 'United Kingdom of Great Britain and Northern Ireland', 'Canada']
+selecao = df_top_country_salary['Country'].isin(top_countries)
+df_top_country_salary = df_top_country_salary[selecao].dropna()
+
+for country in top_countries:
+    df_top_country_salary = df_top_country_salary[(np.abs(stats.zscore(df_top_country_salary['CompTotal'])) < 3)]  # Remove valor extremo
+    df_mean_salary_year = df_top_country_salary.loc[df_top_country_salary['CompFreq'] == 'Yearly'].loc[df_top_country_salary['Country'] == country]['CompTotal'].divide(12) #Transforma salário anual para valor mensal
+    df_mean_salary_week = df_top_country_salary.loc[df_top_country_salary['CompFreq'] == 'Weekly'].loc[df_top_country_salary['Country'] == country]['CompTotal'].mul(4) #Transforma salário semanal para valor mensal
+    df_mean_salary_month = df_top_country_salary.loc[df_top_country_salary['CompFreq'] == 'Monthly'].loc[df_top_country_salary['Country'] == country]['CompTotal']
+    df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month])
+    st.write("O salário médio mensal em {} é de {}".format(country, str(round(df_mean_salary.mean(), 2))))
 
 """---"""
 
