@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 from scipy import stats
+from wordcloud import WordCloud
 
 df_survey = pd.read_csv("dados/survey_results_public.csv")
 
@@ -207,7 +208,7 @@ with st.expander("13- E em python? Qual a média de idade?"):
 
 """---"""
 
-with st.expander("14 Para os 5 países que mais tiveram participação, qual a média salarial?"):
+with st.expander("14- Para os 5 países que mais tiveram participação, qual a média salarial?"):
     df_top_country = df_survey[['Country', 'CompTotal', 'CompFreq', 'Currency']]
     top_countries = ['United States of America', 'India', 'Germany', 'United Kingdom of Great Britain and Northern Ireland', 'Canada']
     selecao = df_top_country['Country'].isin(top_countries)
@@ -226,6 +227,8 @@ with st.expander("14 Para os 5 países que mais tiveram participação, qual a m
             currency = 'USD'
         elif country == 'India':
             df_top_country_salary = df_top_country_salary[df_top_country_salary['Currency'] == 'INR\tIndian rupee']
+            # India está com valores enormes #
+            df_top_country_salary = df_top_country_salary[(np.abs(stats.zscore(df_top_country_salary['CompTotal'])) < 3)]
             currency = 'INR'
         elif country == 'Germany':
             df_top_country_salary = df_top_country_salary[df_top_country_salary['Currency'] == 'EUR European Euro']
@@ -242,7 +245,7 @@ with st.expander("14 Para os 5 países que mais tiveram participação, qual a m
 
 """---"""
 
-with st.expander("15- Qual a porcentagem do uso de python em relação às demais linguagens alegadas na pesquisa?"):
+with st.expander("15- Frequência de menções das linguagens de programação"):
     linguagens = df_survey['LanguageHaveWorkedWith']
     linguagens.dropna(inplace=True)
     counts = dict()
@@ -254,7 +257,5 @@ with st.expander("15- Qual a porcentagem do uso de python em relação às demai
             else:
                 counts[linguagem] = 1
 
-    porcentagem_python = counts['Python'] / sum(counts.values())
-    porcentagem_python = "{:.0%}".format(porcentagem_python)
-
-    st.write("A porcentagem dos que usam disseram usar Python é " + porcentagem_python)
+    wc = WordCloud().fit_words(counts)
+    st.image(wc.to_array())
