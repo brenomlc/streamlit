@@ -59,8 +59,28 @@ for formacao in formacoes:
 
 "#### 5- Das pessoas que trabalham profissionalmente:"
 "##### 5.1- qual a profissão delas?"
+
+jobs = ['I am a developer by profession', 'I am not primarily a developer, but I write code sometimes as part of my work']
+selecao = df_survey['MainBranch'].isin(jobs)
+df_jobs = df_survey[selecao]
+df_jobs = df_jobs.Employment.value_counts()
+df_jobs
+
 "##### 5.2- qual a escolaridade?"
+
+jobs = ['I am a developer by profession', 'I am not primarily a developer, but I write code sometimes as part of my work']
+selecao = df_survey['MainBranch'].isin(jobs)
+df_jobs = df_survey[selecao]
+df_jobs = df_jobs.EdLevel.value_counts()
+df_jobs
+
 "##### 5.3- qual o tamanho das empresas de pessoas que trabalham profissionalmente."
+
+jobs = ['I am a developer by profession', 'I am not primarily a developer, but I write code sometimes as part of my work']
+selecao = df_survey['MainBranch'].isin(jobs)
+df_jobs = df_survey[selecao]
+df_jobs = df_jobs.OrgSize.value_counts()
+df_jobs
 
 """---"""
 
@@ -113,24 +133,76 @@ st.write("A porcentagem dos que usam disseram trabalhar com Python é de " + por
 
 "#### 9- Sobre python:"
 "##### 9.1- Qual o nível de salário de quem trabalha com python globalmente?"
+
+df_python = df_survey[['LanguageHaveWorkedWith', 'CompFreq', 'CompTotal', 'Currency']].dropna()
+df_python = df_python[df_python['LanguageHaveWorkedWith'].str.contains('Python')]
+df_python = df_python[df_python['Currency'] == 'USD\tUnited States dollar']
+df_python = df_python[(np.abs(stats.zscore(df_python['CompTotal'])) < 3)]
+df_mean_salary_year = df_python.loc[df_python['CompFreq'] == 'Yearly']['CompTotal'].divide(12) #Transforma salário anual para valor mensal
+df_mean_salary_week = df_python.loc[df_python['CompFreq'] == 'Weekly']['CompTotal'].mul(4) #Transforma salário semanal para valor mensal
+df_mean_salary_month = df_python.loc[df_python['CompFreq'] == 'Monthly']['CompTotal']
+df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month])
+st.write("O salário médio mensal dos desenvolvedores Python pelo mundo que ganham em USD é $" + str(round(df_mean_salary.mean(), 2)))
+
 "##### 9.2- Para o Brasil, qual o nível salarial?"
+
+df_python = df_survey[['LanguageHaveWorkedWith', 'CompFreq', 'CompTotal', 'Country', 'Currency']].dropna()
+df_python = df_python[df_python['LanguageHaveWorkedWith'].str.contains('Python')]
+df_python = df_python[df_python['Country'] == 'Brazil']
+df_python = df_python[(np.abs(stats.zscore(df_python['CompTotal'])) < 3)]
+df_mean_salary_year = df_python.loc[df_python['CompFreq'] == 'Yearly']['CompTotal'].divide(12) #Transforma salário anual para valor mensal
+df_mean_salary_week = df_python.loc[df_python['CompFreq'] == 'Weekly']['CompTotal'].mul(4) #Transforma salário semanal para valor mensal
+df_mean_salary_month = df_python.loc[df_python['CompFreq'] == 'Monthly']['CompTotal']
+df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month])
+st.write("O salário médio mensal dos desenvolvedores Python no Brasil é R$" + str(round(df_mean_salary.mean(), 2)))
+
 "##### 9.3 Para os 5 países que mais tiveram participação, qual a média salarial?"
+
+df_python = df_survey[['LanguageHaveWorkedWith', 'CompFreq', 'CompTotal', 'Country', 'Currency']].dropna()
+df_python = df_python[df_python['LanguageHaveWorkedWith'].str.contains('Python')]
+top_countries = ['United States of America', 'India', 'Germany', 'United Kingdom of Great Britain and Northern Ireland', 'Canada']
+for country in top_countries:
+    df_python_country = df_python[df_python['Country'] == country]
+    df_python_country = df_python_country[(np.abs(stats.zscore(df_python_country['CompTotal'])) < 3)]
+    df_mean_salary_year = df_python_country.loc[df_python_country['CompFreq'] == 'Yearly']['CompTotal'].divide(12)  # Transforma salário anual para valor mensal
+    df_mean_salary_week = df_python_country.loc[df_python_country['CompFreq'] == 'Weekly']['CompTotal'].mul(4)  # Transforma salário semanal para valor mensal
+    df_mean_salary_month = df_python_country.loc[df_python_country['CompFreq'] == 'Monthly']['CompTotal']
+    df_mean_salary = pd.concat([df_mean_salary_year, df_mean_salary_week, df_mean_salary_month])
+    st.write("O salário médio mensal dos desenvolvedores Python no {} é {}".format(country, str(round(df_mean_salary.mean(), 2))))
 
 """---"""
 
 "#### 10- De todos as pessoas, Qual o sistema operacional utilizado por elas?"
 
+st.code(body="""df_so = df_survey['OpSys'].dropna().value_counts()""", language='python')
+df_so = df_survey['OpSys'].dropna().value_counts()
+df_so
+
 """---"""
 
 "#### 11- Das pessoas que trabalham com python, qual a distribuição de sistema operacional utilizado por elas."
+
+st.code(body="""df_so = df_survey[['OpSys', 'LanguageHaveWorkedWith']].dropna()\ndf_so[df_so['LanguageHaveWorkedWith'].str.contains('Python')]['OpSys']""", language='python')
+df_so = df_survey[['OpSys', 'LanguageHaveWorkedWith']].dropna()
+df_so = df_so[df_so['LanguageHaveWorkedWith'].str.contains('Python')]['OpSys'].value_counts()
+df_so
 
 """---"""
 
 "#### 12- Qual a média de idade das pessoas que responderam?"
 
+st.code(body="""df_age = df_survey['Age'].dropna().value_counts()""", language='python')
+df_age = df_survey['Age'].dropna().value_counts()
+df_age
+
 """---"""
 
 "#### 13- E em python? Qual a média de idade?"
+
+st.code(body="""df_age = df_survey[['Age', 'LanguageHaveWorkedWith']].dropna()\ndf_age = df_age[df_age['LanguageHaveWorkedWith'].str.contains('Python')]['Age'].value_counts()""", language='python')
+df_age = df_survey[['Age', 'LanguageHaveWorkedWith']].dropna()
+df_age = df_age[df_age['LanguageHaveWorkedWith'].str.contains('Python')]['Age'].value_counts()
+df_age
 
 """---"""
 
